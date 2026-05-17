@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
 function GoogleIcon() {
@@ -32,12 +33,19 @@ function GoogleIcon() {
 }
 
 export default function AuthPage() {
+  const router = useRouter();
   const { loading, signInWithGoogle, signOut, user } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const displayName =
     user?.user_metadata.full_name ?? user?.user_metadata.name ?? user?.email;
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/workspace");
+    }
+  }, [loading, router, user]);
 
   async function handleGoogleSignIn() {
     setErrorMessage(null);

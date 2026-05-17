@@ -24,10 +24,10 @@ function TopNav() {
         </div>
         <div className="flex justify-end">
           <a
-            href="/auth"
+            href={user ? "/workspace" : "/auth"}
             className="hidden h-9 items-center justify-center rounded-full border border-white/[0.16] bg-white/[0.06] px-4 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-white hover:text-[#030303] sm:inline-flex"
           >
-            {loading ? "Loading" : user ? "My Account" : "Get Started"}
+            {loading ? "Loading" : user ? "Workspace" : "Get Started"}
           </a>
         </div>
       </nav>
