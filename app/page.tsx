@@ -18,8 +18,9 @@ export default function Page() {
       <TopNav />
       <HeroGeometric
         badge="MUSIC"
-        title1="Creat Your"
+        title1="Create Your"
         title2="Own Sound"
+        description="프롬프트 한 줄로 영상의 분위기에 맞는 음악을 만들고, 필요한 만큼만 크레딧으로 생성하세요."
         titleClassName={cinzel.className}
       />
       <ExampleSection />

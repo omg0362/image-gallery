@@ -55,7 +55,15 @@ function getPolarAccessToken() {
   return getFirstEnv(["POLAR_API_TOKEN", "POLAR_ACCESS_TOKEN"]);
 }
 
-const POLAR_BASE_URL = "https://sandbox-api.polar.sh/v1";
+function getPolarBaseUrl() {
+  const server = process.env.POLAR_SERVER ?? process.env.POLAR_ENVIRONMENT;
+
+  if (server === "sandbox") {
+    return "https://sandbox-api.polar.sh/v1";
+  }
+
+  return "https://api.polar.sh/v1";
+}
 
 function createUserSupabaseClient(accessToken: string) {
   return createClient(
@@ -137,7 +145,7 @@ export async function POST(request: Request) {
     const config = PRODUCT_CONFIG[pack];
     const productId = getFirstEnv(config.envNames);
     const origin = getOrigin(request);
-    const response = await fetch(`${POLAR_BASE_URL}/checkouts/`, {
+    const response = await fetch(`${getPolarBaseUrl()}/checkouts/`, {
       method: "POST",
       headers: {
         Accept: "application/json",

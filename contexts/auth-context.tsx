@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { getSupabaseBrowserClient, supabase } from "@/lib/supabase/client";
 
 type AuthContextValue = {
   credits: number | null;
@@ -101,6 +101,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
 
     async function syncSession() {
+      if (!supabase) {
+        return;
+      }
+
       const storedSession = getStoredSession();
 
       if (storedSession && !cancelled) {
@@ -127,6 +131,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initialSyncTimer = window.setTimeout(() => {
       void syncSession();
     }, 0);
+
+    if (!supabase) {
+      return () => {
+        cancelled = true;
+        window.clearTimeout(initialSyncTimer);
+      };
+    }
 
     const {
       data: { subscription },
@@ -179,7 +190,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [fetchCredits, session?.access_token]);
 
   const signInWithGoogle = useCallback(async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    const client = getSupabaseBrowserClient();
+    const { error } = await client.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/workspace`,
@@ -192,7 +204,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    const { error } = await supabase.auth.signOut();
+    const client = getSupabaseBrowserClient();
+    const { error } = await client.auth.signOut();
 
     if (error) {
       throw error;

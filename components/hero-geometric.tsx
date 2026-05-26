@@ -75,9 +75,11 @@ function HeroGeometric({
   badge = "Design Collective",
   title1 = "Elevate Your Digital Vision",
   title2 = "Crafting Exceptional Websites",
+  description = "Crafting exceptional digital experiences through innovative design and cutting-edge technology.",
   titleClassName,
 }: {
   badge?: string;
+  description?: string;
   title1?: string;
   title2?: string;
   titleClassName?: string;
@@ -96,8 +98,8 @@ function HeroGeometric({
   };
 
   return (
-    <section className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#030303] px-4 pb-14 pt-24 sm:px-6 sm:py-24">
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.05] via-transparent to-rose-500/[0.05] blur-3xl" />
+    <section className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#030303] px-4 pb-14 pt-24 text-white sm:px-6 sm:py-24">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(254,205,0,0.12),transparent_28%),linear-gradient(135deg,rgba(99,102,241,0.06),transparent_42%,rgba(244,63,94,0.06))] blur-3xl" />
 
       <div className="absolute inset-0 overflow-hidden">
         <ElegantShape
@@ -106,7 +108,7 @@ function HeroGeometric({
           height={140}
           rotate={12}
           gradient="from-indigo-500/[0.15]"
-          className="left-[-48%] top-[16%] opacity-70 sm:left-[-22%] md:left-[-5%] md:top-[20%] md:opacity-100"
+          className="left-[-86%] top-[18%] scale-75 opacity-45 sm:left-[-22%] sm:scale-100 md:left-[-5%] md:top-[20%] md:opacity-100"
         />
 
         <ElegantShape
@@ -115,7 +117,7 @@ function HeroGeometric({
           height={120}
           rotate={-15}
           gradient="from-rose-500/[0.15]"
-          className="right-[-56%] top-[74%] opacity-70 sm:right-[-24%] md:right-[0%] md:top-[75%] md:opacity-100"
+          className="right-[-92%] top-[76%] scale-75 opacity-45 sm:right-[-24%] sm:scale-100 md:right-[0%] md:top-[75%] md:opacity-100"
         />
 
         <ElegantShape
@@ -124,7 +126,7 @@ function HeroGeometric({
           height={80}
           rotate={-8}
           gradient="from-violet-500/[0.15]"
-          className="bottom-[8%] left-[-18%] opacity-65 sm:left-[2%] md:bottom-[10%] md:left-[10%] md:opacity-100"
+          className="bottom-[8%] left-[-44%] scale-75 opacity-35 sm:left-[2%] sm:scale-100 md:bottom-[10%] md:left-[10%] md:opacity-100"
         />
 
         <ElegantShape
@@ -133,7 +135,7 @@ function HeroGeometric({
           height={60}
           rotate={20}
           gradient="from-amber-500/[0.15]"
-          className="right-[-12%] top-[10%] opacity-70 sm:right-[10%] md:right-[20%] md:top-[15%] md:opacity-100"
+          className="right-[-26%] top-[11%] scale-75 opacity-55 sm:right-[10%] sm:scale-100 md:right-[20%] md:top-[15%] md:opacity-100"
         />
 
         <ElegantShape
@@ -142,7 +144,7 @@ function HeroGeometric({
           height={40}
           rotate={-25}
           gradient="from-cyan-500/[0.15]"
-          className="left-[8%] top-[6%] opacity-65 sm:left-[18%] md:left-[25%] md:top-[10%] md:opacity-100"
+          className="left-[4%] top-[8%] scale-75 opacity-40 sm:left-[18%] sm:scale-100 md:left-[25%] md:top-[10%] md:opacity-100"
         />
       </div>
 
@@ -153,10 +155,10 @@ function HeroGeometric({
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
-            className="mb-7 inline-flex max-w-full items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 sm:mb-8 md:mb-12"
+            className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.05] px-3 py-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.24)] backdrop-blur sm:mb-8 md:mb-12"
           >
-            <Circle className="h-2 w-2 fill-rose-500/80" />
-            <span className="text-sm tracking-wide text-white/60">
+            <Circle className="h-2 w-2 fill-[#FECD00] text-[#FECD00]" />
+            <span className="text-xs font-medium tracking-[0.22em] text-white/68 sm:text-sm sm:tracking-wide">
               {badge}
             </span>
           </motion.div>
@@ -169,7 +171,7 @@ function HeroGeometric({
           >
             <h1
               className={cn(
-                "mb-5 text-5xl font-bold leading-[0.94] tracking-tight sm:text-6xl md:mb-8 md:text-8xl",
+                "mx-auto mb-5 max-w-[11ch] text-[3.9rem] font-bold leading-[0.86] tracking-normal sm:max-w-none sm:text-6xl md:mb-8 md:text-8xl",
                 titleClassName,
               )}
             >
@@ -189,9 +191,8 @@ function HeroGeometric({
             initial="hidden"
             animate="visible"
           >
-            <p className="mx-auto mb-7 max-w-xl text-sm font-light leading-6 tracking-wide text-white/44 sm:mb-8 sm:text-lg sm:leading-relaxed md:text-xl">
-              Crafting exceptional digital experiences through innovative
-              design and cutting-edge technology.
+            <p className="mx-auto mb-7 max-w-[20rem] text-base font-light leading-7 text-white/58 sm:mb-8 sm:max-w-xl sm:text-lg sm:leading-relaxed md:text-xl">
+              {description}
             </p>
           </motion.div>
 
@@ -200,12 +201,19 @@ function HeroGeometric({
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
+            className="flex flex-col items-center justify-center gap-3 sm:flex-row"
           >
             <a
-              href="#get-started"
-              className="inline-flex h-12 min-w-36 items-center justify-center rounded-full bg-white px-6 text-sm font-semibold tracking-wide text-[#030303] shadow-[0_12px_40px_rgba(255,255,255,0.16)] transition-colors hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/70 focus:ring-offset-2 focus:ring-offset-[#030303]"
+              href="/auth"
+              className="inline-flex h-12 w-full max-w-[18rem] items-center justify-center rounded-full bg-white px-6 text-sm font-semibold tracking-wide text-[#030303] shadow-[0_12px_40px_rgba(255,255,255,0.16)] transition-colors hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/70 focus:ring-offset-2 focus:ring-offset-[#030303] sm:w-auto sm:min-w-36"
             >
-              Get Started
+              Start creating
+            </a>
+            <a
+              href="#example"
+              className="inline-flex h-12 w-full max-w-[18rem] items-center justify-center rounded-full border border-white/[0.14] bg-white/[0.06] px-6 text-sm font-semibold tracking-wide text-white transition-colors hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-white/24 sm:w-auto"
+            >
+              Listen examples
             </a>
           </motion.div>
         </div>
