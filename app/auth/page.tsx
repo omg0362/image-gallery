@@ -1,8 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+
+type CreditPack = "pro" | "ultra";
+
+const PENDING_CREDIT_PACK_KEY = "music:pending-credit-pack";
+
+function isCreditPack(value: string | null): value is CreditPack {
+  return value === "pro" || value === "ultra";
+}
 
 function GoogleIcon() {
   return (
@@ -34,25 +42,83 @@ function GoogleIcon() {
 
 export default function AuthPage() {
   const router = useRouter();
-  const { loading, signInWithGoogle, signOut, user } = useAuth();
+  const { loading, session, signInWithGoogle, signOut, user } = useAuth();
+  const checkoutAttemptedRef = useRef(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [openingCheckout, setOpeningCheckout] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const displayName =
     user?.user_metadata.full_name ?? user?.user_metadata.name ?? user?.email;
 
   useEffect(() => {
-    if (!loading && user) {
-      router.replace("/workspace");
+    if (loading || !user) {
+      return;
     }
-  }, [loading, router, user]);
+
+    const pendingPack = window.localStorage.getItem(PENDING_CREDIT_PACK_KEY);
+
+    if (!isCreditPack(pendingPack)) {
+      if (pendingPack) {
+        window.localStorage.removeItem(PENDING_CREDIT_PACK_KEY);
+      }
+
+      router.replace("/workspace");
+      return;
+    }
+
+    if (!session?.access_token || checkoutAttemptedRef.current) {
+      return;
+    }
+
+    checkoutAttemptedRef.current = true;
+    setErrorMessage(null);
+    setOpeningCheckout(true);
+
+    async function startPendingCheckout(pack: CreditPack, accessToken: string) {
+      try {
+        const response = await fetch("/api/checkout/credits", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pack }),
+        });
+        const data = (await response.json().catch(() => null)) as
+          | { error?: unknown; url?: unknown }
+          | null;
+
+        if (!response.ok || typeof data?.url !== "string") {
+          throw new Error(
+            typeof data?.error === "string"
+              ? data.error
+              : "Failed to open checkout.",
+          );
+        }
+
+        window.localStorage.removeItem(PENDING_CREDIT_PACK_KEY);
+        window.location.assign(data.url);
+      } catch (error) {
+        window.localStorage.removeItem(PENDING_CREDIT_PACK_KEY);
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Failed to open checkout. Please try again.",
+        );
+        setOpeningCheckout(false);
+      }
+    }
+
+    void startPendingCheckout(pendingPack, session.access_token);
+  }, [loading, router, session?.access_token, user]);
 
   async function handleGoogleSignIn() {
     setErrorMessage(null);
     setSubmitting(true);
 
     try {
-      await signInWithGoogle();
+      await signInWithGoogle(`${window.location.origin}/auth`);
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -105,21 +171,29 @@ export default function AuthPage() {
           {user ? (
             <button
               type="button"
-              disabled={loading || submitting}
+              disabled={loading || submitting || openingCheckout}
               onClick={handleSignOut}
               className="group flex h-13 w-full items-center justify-center rounded-full border border-white/15 bg-white text-sm font-semibold text-[#171717] shadow-[0_14px_42px_rgba(255,255,255,0.16)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/70 focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {submitting ? "Signing out..." : "Sign out"}
+              {openingCheckout
+                ? "Opening checkout..."
+                : submitting
+                  ? "Signing out..."
+                  : "Sign out"}
             </button>
           ) : (
             <button
               type="button"
-              disabled={loading || submitting}
+              disabled={loading || submitting || openingCheckout}
               onClick={handleGoogleSignIn}
               className="group flex h-13 w-full items-center justify-center gap-3 rounded-full border border-white/15 bg-white text-sm font-semibold text-[#171717] shadow-[0_14px_42px_rgba(255,255,255,0.16)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/70 focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <GoogleIcon />
-              {submitting ? "Connecting..." : "Continue with Google"}
+              {openingCheckout
+                ? "Opening checkout..."
+                : submitting
+                  ? "Connecting..."
+                  : "Continue with Google"}
             </button>
           )}
 

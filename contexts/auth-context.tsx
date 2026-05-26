@@ -19,7 +19,7 @@ type AuthContextValue = {
   loading: boolean;
   refreshCredits: () => Promise<number | null>;
   setCredits: (credits: number | null) => void;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: (redirectTo?: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -189,12 +189,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [fetchCredits, session?.access_token]);
 
-  const signInWithGoogle = useCallback(async () => {
+  const signInWithGoogle = useCallback(async (redirectTo?: string) => {
     const client = getSupabaseBrowserClient();
     const { error } = await client.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/workspace`,
+        redirectTo: redirectTo ?? `${window.location.origin}/workspace`,
       },
     });
 

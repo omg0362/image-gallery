@@ -2,20 +2,38 @@
 
 import { motion } from "framer-motion";
 import { Check, Circle, Coins } from "lucide-react";
+import { useState } from "react";
+import { useAuth } from "@/contexts/auth-context";
 
-const plans = [
+type CreditPack = "pro" | "ultra";
+
+const PENDING_CREDIT_PACK_KEY = "music:pending-credit-pack";
+
+type PricingPlan = {
+  credits: string;
+  cta: string;
+  description: string;
+  id: CreditPack;
+  name: string;
+  price: string;
+  points: string[];
+};
+
+const plans: PricingPlan[] = [
   {
     credits: "100",
     cta: "Start with Pro",
     description: "가볍게 시작해서 쇼츠, 브이로그, 광고 테스트 음악을 빠르게 만들어보세요.",
+    id: "pro",
     name: "Pro",
     price: "$5",
     points: ["100 credits included", "1분 기본 생성 100회 기준", "필요할 때만 충전"],
   },
   {
     credits: "1,100",
-    cta: "Scale with Ultra",
+    cta: "Start with Ultra",
     description: "더 많은 결과물을 만들고 여러 길이와 버전을 비교해야 하는 제작자를 위한 선택입니다.",
+    id: "ultra",
     name: "Ultra",
     price: "$50",
     points: ["1,100 credits included", "Pro 대비 10% bonus", "긴 영상과 다중 결과물에 적합"],
@@ -23,6 +41,53 @@ const plans = [
 ];
 
 export function PricingSection() {
+  const { session } = useAuth();
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [checkoutPack, setCheckoutPack] = useState<CreditPack | null>(null);
+
+  async function handleCheckout(pack: CreditPack) {
+    setCheckoutError(null);
+
+    if (!session?.access_token) {
+      window.localStorage.setItem(PENDING_CREDIT_PACK_KEY, pack);
+      window.location.assign("/auth");
+      return;
+    }
+
+    setCheckoutPack(pack);
+
+    try {
+      const response = await fetch("/api/checkout/credits", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pack }),
+      });
+      const data = (await response.json().catch(() => null)) as
+        | { error?: unknown; url?: unknown }
+        | null;
+
+      if (!response.ok || typeof data?.url !== "string") {
+        throw new Error(
+          typeof data?.error === "string"
+            ? data.error
+            : "Failed to open checkout.",
+        );
+      }
+
+      window.location.assign(data.url);
+    } catch (error) {
+      setCheckoutError(
+        error instanceof Error
+          ? error.message
+          : "Failed to open checkout. Please try again.",
+      );
+      setCheckoutPack(null);
+    }
+  }
+
   return (
     <section
       id="pricing"
@@ -138,16 +203,26 @@ export function PricingSection() {
                   ))}
                 </ul>
 
-                <a
-                  href="/auth"
+                <button
+                  type="button"
+                  disabled={checkoutPack !== null}
+                  onClick={() => {
+                    void handleCheckout(plan.id);
+                  }}
                   className="mt-8 flex h-11 w-full items-center justify-center rounded-full bg-black px-4 text-sm font-semibold text-white transition hover:bg-black/82"
                 >
-                  {plan.cta}
-                </a>
+                  {checkoutPack === plan.id ? "Opening checkout..." : plan.cta}
+                </button>
               </div>
             </motion.article>
           ))}
         </div>
+
+        {checkoutError ? (
+          <p className="mx-auto mt-6 max-w-md rounded-[8px] border border-red-400/20 bg-red-400/10 px-4 py-3 text-center text-sm text-red-100">
+            {checkoutError}
+          </p>
+        ) : null}
       </div>
     </section>
   );
