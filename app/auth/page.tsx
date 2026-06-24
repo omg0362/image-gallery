@@ -90,22 +90,14 @@ export default function AuthPage() {
           | null;
 
         if (!response.ok || typeof data?.url !== "string") {
-          throw new Error(
-            typeof data?.error === "string"
-              ? data.error
-              : "Failed to open checkout.",
-          );
+          throw new Error("결제 창을 열지 못했습니다.");
         }
 
         window.localStorage.removeItem(PENDING_CREDIT_PACK_KEY);
         window.location.assign(data.url);
-      } catch (error) {
+      } catch {
         window.localStorage.removeItem(PENDING_CREDIT_PACK_KEY);
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "Failed to open checkout. Please try again.",
-        );
+        setErrorMessage("결제 창을 열지 못했습니다. 다시 시도해 주세요.");
         setOpeningCheckout(false);
       }
     }
@@ -119,12 +111,8 @@ export default function AuthPage() {
 
     try {
       await signInWithGoogle(`${window.location.origin}/auth`);
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Google sign-in failed. Please try again.",
-      );
+    } catch {
+      setErrorMessage("Google 로그인에 실패했습니다. 다시 시도해 주세요.");
       setSubmitting(false);
     }
   }
@@ -135,10 +123,8 @@ export default function AuthPage() {
 
     try {
       await signOut();
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Sign-out failed. Please try again.",
-      );
+    } catch {
+      setErrorMessage("로그아웃에 실패했습니다. 다시 시도해 주세요.");
     } finally {
       setSubmitting(false);
     }
@@ -159,12 +145,12 @@ export default function AuthPage() {
               MUSIC
             </p>
             <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-              {user ? "Signed in" : "Welcome back"}
+              {user ? "로그인됨" : "다시 오신 것을 환영합니다"}
             </h1>
             <p className="mx-auto mt-4 max-w-xs text-sm leading-6 text-white/50">
               {user
                 ? `${displayName} 계정으로 로그인되어 있습니다.`
-                : "Continue with Google to start shaping your own sound."}
+                : "Google 계정으로 계속해서 나만의 음악을 만들어보세요."}
             </p>
           </div>
 
@@ -176,10 +162,10 @@ export default function AuthPage() {
               className="group flex h-13 w-full items-center justify-center rounded-full border border-white/15 bg-white text-sm font-semibold text-[#171717] shadow-[0_14px_42px_rgba(255,255,255,0.16)] transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/70 focus:ring-offset-2 focus:ring-offset-[#171717] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {openingCheckout
-                ? "Opening checkout..."
+                ? "결제 창을 여는 중..."
                 : submitting
-                  ? "Signing out..."
-                  : "Sign out"}
+                  ? "로그아웃 중..."
+                  : "로그아웃"}
             </button>
           ) : (
             <button
@@ -190,10 +176,10 @@ export default function AuthPage() {
             >
               <GoogleIcon />
               {openingCheckout
-                ? "Opening checkout..."
+                ? "결제 창을 여는 중..."
                 : submitting
-                  ? "Connecting..."
-                  : "Continue with Google"}
+                  ? "연결 중..."
+                  : "Google로 계속하기"}
             </button>
           )}
 
@@ -204,7 +190,7 @@ export default function AuthPage() {
           ) : null}
 
           <p className="mt-8 text-center text-xs leading-5 text-white/35">
-            By continuing, you agree to keep the rhythm moving.
+            계속 진행하면 MUSIC의 서비스 이용에 동의하게 됩니다.
           </p>
         </div>
       </section>

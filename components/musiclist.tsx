@@ -1,6 +1,7 @@
 "use client";
 
-import { MoreHorizontal, Music, Pause, Play } from "lucide-react";
+import { MoreHorizontal, Music, Play } from "lucide-react";
+import type { CSSProperties } from "react";
 
 export type MusicTrack = {
   id: string;
@@ -29,7 +30,7 @@ type MusicListProps = {
 };
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("ko-KR", {
     month: "short",
     day: "numeric",
     hour: "2-digit",
@@ -38,7 +39,7 @@ function formatDate(value: string) {
 }
 
 function formatDuration(value: number | null) {
-  if (!value) return "Unknown length";
+  if (!value) return "길이 미확인";
 
   const minutes = Math.floor(value / 60);
   const seconds = Math.round(value % 60)
@@ -54,6 +55,49 @@ function formatFileSize(value: number | null) {
   return `${(value / 1024 / 1024).toFixed(1)} MB`;
 }
 
+function formatStatus(value: string) {
+  const normalizedValue = value.toLowerCase();
+
+  if (normalizedValue === "completed") return "생성 완료";
+  if (normalizedValue === "processing" || normalizedValue === "pending") {
+    return "생성 중";
+  }
+  if (normalizedValue === "failed" || normalizedValue === "error") {
+    return "생성 실패";
+  }
+
+  return "상태 확인 중";
+}
+
+function SoundWaveIcon() {
+  const bars = [
+    { delay: "0ms", height: "0.34", duration: "760ms" },
+    { delay: "110ms", height: "0.58", duration: "680ms" },
+    { delay: "220ms", height: "0.82", duration: "820ms" },
+    { delay: "70ms", height: "0.5", duration: "720ms" },
+    { delay: "180ms", height: "0.68", duration: "780ms" },
+  ];
+
+  return (
+    <span
+      aria-hidden="true"
+      className="flex h-5 w-5 items-center justify-center gap-[2px]"
+    >
+      {bars.map((bar, index) => (
+        <span
+          key={`${bar.height}-${index}`}
+          className="music-list-sound-wave-bar h-full w-[3px] rounded-full bg-[#FECD00] shadow-[0_0_10px_rgba(254,205,0,0.58)]"
+          style={{
+            "--wave-height": bar.height,
+            "--wave-duration": bar.duration,
+            animationDelay: bar.delay,
+          } as CSSProperties}
+        />
+      ))}
+    </span>
+  );
+}
+
 export function MusicList({
   activeTrackId,
   isActiveTrackPlaying = false,
@@ -67,7 +111,7 @@ export function MusicList({
   if (loading) {
     return (
       <div className="rounded-[8px] border border-white/12 bg-white/[0.05] px-5 py-4 text-sm text-white/58">
-        Loading music files...
+        음악 파일을 불러오는 중...
       </div>
     );
   }
@@ -76,9 +120,11 @@ export function MusicList({
     return (
       <div className="rounded-[8px] border border-white/12 bg-white/[0.05] px-5 py-10 text-center">
         <Music className="mx-auto mb-3 h-6 w-6 text-white/38" aria-hidden="true" />
-        <p className="text-sm font-medium text-white/72">No music files yet.</p>
+        <p className="text-sm font-medium text-white/72">
+          아직 생성한 음악이 없습니다.
+        </p>
         <p className="mt-1 text-xs text-white/42">
-          Generated tracks will appear here after they are saved.
+          생성한 음악은 저장된 뒤 여기에 표시됩니다.
         </p>
       </div>
     );
@@ -87,9 +133,9 @@ export function MusicList({
   return (
     <div className="rounded-[8px] border border-white/12 bg-white/[0.05]">
       <div className="grid grid-cols-[1fr_auto_36px] border-b border-white/10 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/40 sm:grid-cols-[1fr_110px_120px_36px]">
-        <span>Music file</span>
-        <span className="hidden sm:block">Duration</span>
-        <span className="text-right">Created</span>
+        <span>음악 파일</span>
+        <span className="hidden sm:block">길이</span>
+        <span className="text-right">생성일</span>
         <span aria-hidden="true" />
       </div>
       <div className="divide-y divide-white/10">
@@ -110,10 +156,14 @@ export function MusicList({
                 <div className="flex items-center gap-3">
                   <span
                     aria-hidden="true"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/14 bg-white/[0.08] text-white/70 transition group-hover:border-white/22 group-hover:bg-white group-hover:text-[#171717]"
+                    className={
+                      isActiveTrack && isActiveTrackPlaying
+                        ? "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#FECD00]/45 bg-[#FECD00]/10 text-[#FECD00] shadow-[0_0_26px_rgba(254,205,0,0.16),inset_0_1px_0_rgba(255,255,255,0.18)] transition group-hover:border-[#FECD00]/70 group-hover:bg-[#FECD00]/16"
+                        : "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/14 bg-white/[0.08] text-white/70 transition group-hover:border-white/22 group-hover:bg-white group-hover:text-[#171717]"
+                    }
                   >
                     {isActiveTrack && isActiveTrackPlaying ? (
-                      <Pause className="h-4 w-4" />
+                      <SoundWaveIcon />
                     ) : isActiveTrack ? (
                       <Play className="ml-0.5 h-4 w-4" />
                     ) : (
@@ -122,10 +172,10 @@ export function MusicList({
                   </span>
                   <div className="min-w-0">
                     <h2 className="truncate text-sm font-semibold text-white/88">
-                      {track.title ?? track.file_name ?? "Untitled track"}
+                      {track.title ?? track.file_name ?? "제목 없는 음악"}
                     </h2>
                     <p className="mt-1 truncate text-xs text-white/42">
-                      {track.prompt ?? track.file_name ?? track.status}
+                      {track.prompt ?? track.file_name ?? formatStatus(track.status)}
                       {fileSize ? ` - ${fileSize}` : ""}
                     </p>
                   </div>
@@ -143,7 +193,7 @@ export function MusicList({
               <div className="relative flex justify-end">
                 <button
                   type="button"
-                  aria-label={`${track.title ?? track.file_name ?? "Music"} options`}
+                  aria-label={`${track.title ?? track.file_name ?? "음악"} 옵션`}
                   className="peer flex h-9 w-9 items-center justify-center rounded-full text-white/50 transition hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white focus:outline-none"
                   onClick={(event) => event.stopPropagation()}
                 >
@@ -155,7 +205,7 @@ export function MusicList({
                     onClick={() => onRenameTrack?.(track)}
                     className="block w-full rounded-[6px] px-3 py-2 text-left text-xs text-white/78 transition hover:bg-white/10 hover:text-white"
                   >
-                    Rename
+                    이름 변경
                   </button>
                   <button
                     type="button"
@@ -163,14 +213,14 @@ export function MusicList({
                     onClick={() => onDownloadTrack?.(track)}
                     className="block w-full rounded-[6px] px-3 py-2 text-left text-xs text-white/78 transition hover:bg-white/10 hover:text-white disabled:pointer-events-none disabled:opacity-40"
                   >
-                    Download
+                    다운로드
                   </button>
                   <button
                     type="button"
                     onClick={() => onDeleteTrack?.(track)}
                     className="block w-full rounded-[6px] px-3 py-2 text-left text-xs text-red-200 transition hover:bg-red-400/12 hover:text-red-100"
                   >
-                    Delete
+                    삭제
                   </button>
                 </div>
               </div>

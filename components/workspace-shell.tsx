@@ -12,7 +12,7 @@ import { WorkspaceNavbar } from "@/components/workspace-navbar";
 import { useAuth } from "@/contexts/auth-context";
 
 function LoadingLines() {
-  const letters = "Loading".split("");
+  const letters = "생성 중".split("");
 
   return (
     <div className="relative flex h-12 w-fit items-center justify-center overflow-hidden px-2 font-semibold text-white select-none">
@@ -197,21 +197,19 @@ export function WorkspaceShell() {
       };
 
       if (!response.ok) {
-        throw new Error(data.error ?? "Failed to load music list.");
+        throw new Error("음악 목록을 불러오지 못했습니다.");
       }
 
       if (!controller.signal.aborted) {
         tracksRef.current = data.music ?? [];
         setTracks(data.music ?? []);
       }
-    } catch (error) {
+    } catch {
       if (!controller.signal.aborted || timedOut) {
         setErrorMessage(
           timedOut
-            ? "Music list refresh timed out. Please try again."
-            : error instanceof Error
-              ? error.message
-              : "Failed to load music list.",
+            ? "음악 목록 새로고침 시간이 초과되었습니다. 다시 시도해 주세요."
+            : "음악 목록을 불러오지 못했습니다.",
         );
       }
     } finally {
@@ -289,12 +287,12 @@ export function WorkspaceShell() {
 
   async function handleRenameTrack(track: MusicTrack) {
     if (!session?.access_token) {
-      setErrorMessage("Please sign in before renaming music.");
+      setErrorMessage("음악 이름을 변경하려면 먼저 로그인해 주세요.");
       return;
     }
 
     const nextTitle = window.prompt(
-      "Rename music",
+      "음악 이름 변경",
       track.title ?? track.file_name ?? "",
     );
 
@@ -317,7 +315,7 @@ export function WorkspaceShell() {
       };
 
       if (!response.ok || !data.music) {
-        throw new Error(data.error ?? "Failed to rename music.");
+        throw new Error("음악 이름을 변경하지 못했습니다.");
       }
 
       setTracks((currentTracks) =>
@@ -325,21 +323,19 @@ export function WorkspaceShell() {
           currentTrack.id === data.music?.id ? data.music : currentTrack,
         ),
       );
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to rename music.",
-      );
+    } catch {
+      setErrorMessage("음악 이름을 변경하지 못했습니다.");
     }
   }
 
   async function handleDeleteTrack(track: MusicTrack) {
     if (!session?.access_token) {
-      setErrorMessage("Please sign in before deleting music.");
+      setErrorMessage("음악을 삭제하려면 먼저 로그인해 주세요.");
       return;
     }
 
     const confirmed = window.confirm(
-      `Delete "${track.title ?? track.file_name ?? "this music"}"?`,
+      `"${track.title ?? track.file_name ?? "이 음악"}"을 삭제할까요?`,
     );
 
     if (!confirmed) return;
@@ -356,13 +352,8 @@ export function WorkspaceShell() {
           },
         },
       );
-      const data = (await response.json()) as {
-        id?: string;
-        error?: string;
-      };
-
       if (!response.ok) {
-        throw new Error(data.error ?? "Failed to delete music.");
+        throw new Error("음악을 삭제하지 못했습니다.");
       }
 
       setTracks((currentTracks) =>
@@ -372,16 +363,14 @@ export function WorkspaceShell() {
       if (selectedTrackId === track.id) {
         setSelectedTrackId(null);
       }
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to delete music.",
-      );
+    } catch {
+      setErrorMessage("음악을 삭제하지 못했습니다.");
     }
   }
 
   async function handleDownloadTrack(track: MusicTrack) {
     if (!track.signed_url) {
-      setErrorMessage("Download URL is not available.");
+      setErrorMessage("다운로드 링크를 사용할 수 없습니다.");
       return;
     }
 
@@ -391,7 +380,7 @@ export function WorkspaceShell() {
       const response = await fetch(track.signed_url);
 
       if (!response.ok) {
-        throw new Error("Failed to download music.");
+        throw new Error("음악을 다운로드하지 못했습니다.");
       }
 
       const blob = await response.blob();
@@ -404,16 +393,14 @@ export function WorkspaceShell() {
       link.click();
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to download music.",
-      );
+    } catch {
+      setErrorMessage("음악을 다운로드하지 못했습니다.");
     }
   }
 
   async function handleSendMessage(message: string, options: PromptOptions) {
     if (!session?.access_token) {
-      setErrorMessage("Please sign in before generating music.");
+      setErrorMessage("음악을 생성하려면 먼저 로그인해 주세요.");
       return;
     }
 
@@ -449,14 +436,12 @@ export function WorkspaceShell() {
           setCreditModalOpen(true);
         }
 
-        throw new Error(data.error ?? "Failed to generate music.");
+        throw new Error("음악을 생성하지 못했습니다.");
       }
 
       setTracks((currentTracks) => [...(data.music ?? []), ...currentTracks]);
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to generate music.",
-      );
+    } catch {
+      setErrorMessage("음악을 생성하지 못했습니다.");
     } finally {
       setGenerating(false);
     }
@@ -479,11 +464,11 @@ export function WorkspaceShell() {
             AI MUSIC STUDIO
           </p>
           <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-white sm:text-6xl">
-            Turn a prompt into a track.
+            프롬프트로 음악을 만들어보세요.
           </h1>
           <p className="mt-5 max-w-xl text-sm leading-6 text-white/48 sm:text-base">
-            Describe a genre, mood, instruments, tempo, or scene. Choose length
-            and return count before generating.
+            장르, 무드, 악기, 템포, 장면을 자연스럽게 설명하세요. 생성하기
+            전에 길이와 곡 수를 선택할 수 있습니다.
           </p>
         </div>
 
@@ -502,6 +487,9 @@ export function WorkspaceShell() {
             }
 
             setSelectedTrackId(track.id);
+            if (track.signed_url) {
+              setIsPlayerPlaying(true);
+            }
             setPlayRequest((request) => request + 1);
           }}
           tracks={filteredTracks}

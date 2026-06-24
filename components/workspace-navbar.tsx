@@ -51,7 +51,7 @@ function CreditModal({
 
   async function handleCheckout(pack: CreditPack) {
     if (!accessToken) {
-      setCheckoutError("Sign in is required before checkout.");
+      setCheckoutError("결제하려면 먼저 로그인해 주세요.");
       return;
     }
 
@@ -72,12 +72,7 @@ function CreditModal({
         | null;
 
       if (!response.ok || !data || typeof data.url !== "string") {
-        const message =
-          typeof data?.error === "string"
-            ? data.error
-            : "Failed to start checkout.";
-
-        throw new Error(message);
+        throw new Error("결제를 시작하지 못했습니다.");
       }
 
       flushSync(() => {
@@ -85,10 +80,8 @@ function CreditModal({
         onClose();
       });
       window.location.assign(data.url);
-    } catch (error) {
-      setCheckoutError(
-        error instanceof Error ? error.message : "Failed to start checkout.",
-      );
+    } catch {
+      setCheckoutError("결제를 시작하지 못했습니다.");
       setCheckoutPack(null);
     }
   }
@@ -98,7 +91,7 @@ function CreditModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      aria-label="Upgrade credits"
+      aria-label="크레딧 충전"
       onMouseDown={onClose}
     >
       <div
@@ -107,11 +100,11 @@ function CreditModal({
       >
         <div>
           <div className="mb-5 flex items-center justify-between">
-            <h2 className="text-base font-semibold">Upgrade</h2>
+            <h2 className="text-base font-semibold">크레딧 충전</h2>
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close upgrade modal"
+              aria-label="크레딧 충전 창 닫기"
               className="flex h-9 w-9 items-center justify-center rounded-full text-white/50 transition hover:bg-white/10 hover:text-white"
             >
               <X className="h-4 w-4" aria-hidden="true" />
@@ -141,7 +134,7 @@ function CreditModal({
                     {plan.price}
                   </p>
                   <p className="mt-2 text-sm text-black/58">
-                    {plan.credits.toLocaleString()} credits
+                    {plan.credits.toLocaleString()} 크레딧
                   </p>
                   <button
                     type="button"
@@ -149,7 +142,7 @@ function CreditModal({
                     disabled={checkoutPack !== null}
                     className="mt-6 flex h-10 w-full items-center justify-center rounded-full bg-black px-4 text-sm font-semibold text-white transition hover:bg-black/82 disabled:cursor-not-allowed disabled:bg-black/45"
                   >
-                    {checkoutPack === plan.id ? "Redirecting..." : "Checkout"}
+                    {checkoutPack === plan.id ? "결제로 이동 중..." : "결제하기"}
                   </button>
                 </div>
               </article>
@@ -219,7 +212,7 @@ export function WorkspaceNavbar({
       <nav className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4">
         <Link
           href="/"
-          aria-label="Go to MUSIC landing page"
+          aria-label="MUSIC 랜딩페이지로 이동"
           className="group inline-flex h-12 items-center gap-3 rounded-full border border-[#FECD00]/18 bg-[#FECD00]/[0.055] px-3.5 pr-4 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_16px_48px_rgba(0,0,0,0.28)] backdrop-blur-2xl transition hover:border-[#FECD00]/36 hover:bg-[#FECD00]/[0.09] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_18px_56px_rgba(254,205,0,0.08)]"
         >
           <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-[#FECD00]/24 bg-[radial-gradient(circle_at_50%_18%,rgba(254,205,0,0.42),rgba(254,205,0,0.1)_42%,rgba(255,255,255,0.06)_100%)] text-[#FECD00] shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_0_28px_rgba(254,205,0,0.16)]">
@@ -243,8 +236,8 @@ export function WorkspaceNavbar({
             </span>
             <input
               type="search"
-              aria-label="Search"
-              placeholder="Search by title"
+              aria-label="음악 검색"
+              placeholder="제목으로 검색"
               value={searchQuery ?? ""}
               onChange={(event) => onSearchChange?.(event.target.value)}
               className="h-12 w-full rounded-full border border-white/14 bg-white/[0.075] px-11 text-sm text-white outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_18px_55px_rgba(0,0,0,0.28)] backdrop-blur-2xl transition placeholder:text-white/38 focus:border-white/28 focus:bg-white/[0.1] focus:ring-2 focus:ring-white/10"
@@ -262,7 +255,7 @@ export function WorkspaceNavbar({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={avatarUrl}
-                  alt={displayName ? `${displayName} profile` : "User profile"}
+                  alt={displayName ? `${displayName} 프로필` : "사용자 프로필"}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -272,7 +265,7 @@ export function WorkspaceNavbar({
               )}
             </span>
             <span className="hidden max-w-[120px] truncate text-xs font-medium text-white/72 sm:block">
-              {loading && !user ? "Loading" : displayName}
+              {loading && !user ? "불러오는 중" : displayName}
             </span>
             <span className="hidden h-7 items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.06] px-2 text-[11px] font-semibold text-white/72 sm:inline-flex">
               <Coins className="h-3 w-3" aria-hidden="true" />
@@ -285,7 +278,7 @@ export function WorkspaceNavbar({
               <div className="mb-1 flex h-10 w-full items-center justify-between rounded-xl px-3 text-xs font-semibold text-white/78">
                 <span className="inline-flex items-center gap-2">
                   <Coins className="h-3.5 w-3.5" aria-hidden="true" />
-                  Credits
+                  크레딧
                 </span>
                 <span>
                   {typeof credits === "number" ? credits.toLocaleString() : "--"}
@@ -297,7 +290,7 @@ export function WorkspaceNavbar({
                 className="mb-1 flex h-10 w-full items-center justify-center gap-2 rounded-xl text-xs font-semibold text-white/78 transition hover:bg-white/12 hover:text-white"
               >
                 <Star className="h-3.5 w-3.5" aria-hidden="true" />
-                Upgrade
+                충전하기
               </button>
               <button
                 type="button"
@@ -305,7 +298,7 @@ export function WorkspaceNavbar({
                 disabled={signingOut}
                 className="flex h-10 w-full items-center justify-center rounded-xl text-xs font-semibold text-white/78 transition hover:bg-white/12 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {signingOut ? "Signing out..." : "Sign out"}
+                {signingOut ? "로그아웃 중..." : "로그아웃"}
               </button>
             </div>
           </div>

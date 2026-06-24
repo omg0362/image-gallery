@@ -1,9 +1,9 @@
 {
-  "name": "dev",
+  "name": "image_practice",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm --prefix image_practice run dev",
+    "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

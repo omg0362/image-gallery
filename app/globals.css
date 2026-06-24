@@ -24,3 +24,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.music-list-sound-wave-bar {
+  animation: musicListSoundWave var(--wave-duration) ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes musicListSoundWave {
+  0%,
+  100% {
+    transform: scaleY(0.28);
+    opacity: 0.52;
+  }
+
+  48% {
+    transform: scaleY(var(--wave-height));
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-list-sound-wave-bar {
+    animation: none;
+    opacity: 0.88;
+    transform: scaleY(0.62);
+  }
+}

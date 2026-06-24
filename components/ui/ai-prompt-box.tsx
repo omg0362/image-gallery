@@ -26,9 +26,9 @@ type PromptInputBoxProps = {
 };
 
 const durationOptions = [
-  { extraCredits: 0, label: "1 min", value: 60 },
-  { extraCredits: 1, label: "2 min", value: 120 },
-  { extraCredits: 2, label: "3 min", value: 180 },
+  { extraCredits: 0, label: "1분", value: 60 },
+  { extraCredits: 1, label: "2분", value: 120 },
+  { extraCredits: 2, label: "3분", value: 180 },
 ];
 
 const batchSizeOptions = [1, 2, 3, 4];
@@ -46,7 +46,7 @@ function getCreditCost(duration: number, batchSize: number) {
 }
 
 function formatExtraCredits(extraCredits: number) {
-  return extraCredits > 0 ? `+${extraCredits}` : "Base";
+  return extraCredits > 0 ? `+${extraCredits}` : "기본";
 }
 
 function LyricsModal({
@@ -91,16 +91,16 @@ function LyricsModal({
         <div className="mb-4 flex items-center justify-between gap-4">
           <div>
             <h2 id="lyrics-modal-title" className="text-sm font-semibold">
-              Lyrics
+              가사
             </h2>
             <p className="mt-1 text-xs text-white/42">
-              Add lyrics with tags like [Verse] and [Chorus].
+              [Verse], [Chorus] 같은 태그와 함께 가사를 입력하세요.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close lyrics"
+            aria-label="가사 닫기"
             className="flex h-9 w-9 items-center justify-center rounded-full text-white/52 transition hover:bg-white/10 hover:text-white"
           >
             <X className="h-4 w-4" aria-hidden="true" />
@@ -108,14 +108,14 @@ function LyricsModal({
         </div>
 
         <label className="sr-only" htmlFor="lyrics-textarea">
-          Lyrics
+          가사
         </label>
         <textarea
           id="lyrics-textarea"
           value={draftLyrics ?? ""}
           onChange={(event) => setDraftLyrics(event.target.value)}
           rows={10}
-          placeholder={"[Verse]\nWrite your lyrics here..."}
+          placeholder={"[Verse]\n가사를 입력하세요..."}
           className="w-full resize-none rounded-[8px] border border-white/12 bg-white/[0.06] px-3 py-3 text-sm leading-6 text-white outline-none placeholder:text-white/32 focus:border-white/24 focus:ring-2 focus:ring-white/10"
         />
 
@@ -125,7 +125,7 @@ function LyricsModal({
             onClick={onClose}
             className="h-9 rounded-full px-4 text-xs font-semibold text-white/62 transition hover:bg-white/10 hover:text-white"
           >
-            Cancel
+            취소
           </button>
           <button
             type="button"
@@ -135,7 +135,7 @@ function LyricsModal({
             }}
             className="h-9 rounded-full bg-white px-4 text-xs font-semibold text-[#171717] transition hover:bg-white/90"
           >
-            Save lyrics
+            가사 저장
           </button>
         </div>
       </div>
@@ -204,7 +204,7 @@ export function PromptInputBox({
             className="inline-flex h-8 items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 text-xs text-white/68 transition hover:bg-white/12 hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
           >
             <FileText className="h-3.5 w-3.5" aria-hidden="true" />
-            {lyrics ? "Lyrics added" : "Lyrics"}
+            {lyrics ? "가사 추가됨" : "가사"}
           </button>
 
           <div className="relative">
@@ -219,7 +219,7 @@ export function PromptInputBox({
               className="inline-flex h-8 items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 text-xs text-white/68 transition hover:bg-white/12 hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
             >
               <Timer className="h-3.5 w-3.5" aria-hidden="true" />
-              {duration / 60} min
+              {duration / 60}분
               {durationExtraCredits > 0 ? (
                 <span className="rounded-full bg-white/12 px-1.5 py-0.5 text-[10px] text-white/70">
                   +{durationExtraCredits}
@@ -260,7 +260,7 @@ export function PromptInputBox({
               className="inline-flex h-8 items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 text-xs text-white/68 transition hover:bg-white/12 hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
             >
               <Layers className="h-3.5 w-3.5" aria-hidden="true" />
-              {batchSize} track{batchSize > 1 ? "s" : ""}
+              {batchSize}곡
               {batchExtraCredits > 0 ? (
                 <span className="rounded-full bg-white/12 px-1.5 py-0.5 text-[10px] text-white/70">
                   +{batchExtraCredits}
@@ -280,7 +280,7 @@ export function PromptInputBox({
                     className="flex w-full items-center justify-between rounded-[6px] px-3 py-2 text-left text-xs text-white/78 transition hover:bg-white/10 hover:text-white"
                   >
                     <span>
-                      {option} track{option > 1 ? "s" : ""}
+                      {option}곡
                     </span>
                     <span className="text-[10px] text-white/46">
                       {formatExtraCredits(getBatchExtraCredits(option))}
@@ -303,10 +303,10 @@ export function PromptInputBox({
             )}
           >
             <Coins className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>{creditCost} credit cost</span>
+            <span>{creditCost} 크레딧</span>
             {typeof availableCredits === "number" ? (
               <span className="text-white/42">
-                {availableCredits.toLocaleString()} left
+                {availableCredits.toLocaleString()} 남음
               </span>
             ) : null}
           </button>
@@ -314,14 +314,14 @@ export function PromptInputBox({
 
         <div className="flex items-end gap-2">
           <label className="sr-only" htmlFor="workspace-prompt">
-            Music style prompt
+            음악 스타일 프롬프트
           </label>
           <textarea
             id="workspace-prompt"
             value={message ?? ""}
             disabled={disabled}
             onChange={(event) => setMessage(event.target.value)}
-            placeholder="Describe genre, instruments, mood..."
+            placeholder="장르, 악기, 무드, 장면을 설명하세요..."
             rows={1}
             className="max-h-32 min-h-11 flex-1 resize-none bg-transparent px-2 py-3 text-sm leading-5 text-white outline-none placeholder:text-white/36"
             onKeyDown={(event) => {
@@ -345,7 +345,7 @@ export function PromptInputBox({
               event.preventDefault();
               onInsufficientCredits?.();
             }}
-            aria-label="Generate music"
+            aria-label="음악 생성"
             className={cn(
               "mb-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-[0_10px_28px_rgba(255,255,255,0.18)] transition hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-white/30 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:scale-100",
               hasInsufficientCredits

@@ -78,10 +78,16 @@ export function MusicPlayer({
       playOnLoadRef.current = false;
       audio
         .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => setIsPlaying(false));
+        .then(() => {
+          setIsPlaying(true);
+          onPlaybackChange(true);
+        })
+        .catch(() => {
+          setIsPlaying(false);
+          onPlaybackChange(false);
+        });
     }
-  }, [canPlay, currentTrack?.id, playRequest]);
+  }, [canPlay, currentTrack?.id, onPlaybackChange, playRequest]);
 
   useEffect(() => {
     if (pauseRequest === lastPauseRequestRef.current) return;
@@ -190,10 +196,10 @@ export function MusicPlayer({
           </span>
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-white/90">
-              {currentTrack?.title ?? currentTrack?.file_name ?? "Select a track"}
+              {currentTrack?.title ?? currentTrack?.file_name ?? "음악을 선택하세요"}
             </p>
             <p className="mt-1 truncate text-xs text-white/42">
-              {currentTrack?.prompt ?? "Generated music will play here."}
+              {currentTrack?.prompt ?? "생성한 음악이 여기에서 재생됩니다."}
             </p>
           </div>
         </div>
@@ -204,7 +210,7 @@ export function MusicPlayer({
               type="button"
               onClick={() => selectRelativeTrack(-1)}
               disabled={playableTracks.length < 2}
-              aria-label="Previous track"
+              aria-label="이전 곡"
               className="flex h-8 w-8 items-center justify-center rounded-full text-white/64 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
             >
               <SkipBack className="h-4 w-4" aria-hidden="true" />
@@ -213,7 +219,7 @@ export function MusicPlayer({
               type="button"
               onClick={togglePlayback}
               disabled={!canPlay}
-              aria-label={isPlaying ? "Pause" : "Play"}
+              aria-label={isPlaying ? "일시정지" : "재생"}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#101010] transition hover:scale-[1.03] hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:scale-100"
             >
               {isPlaying ? (
@@ -226,7 +232,7 @@ export function MusicPlayer({
               type="button"
               onClick={() => selectRelativeTrack(1)}
               disabled={playableTracks.length < 2}
-              aria-label="Next track"
+              aria-label="다음 곡"
               className="flex h-8 w-8 items-center justify-center rounded-full text-white/64 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
             >
               <SkipForward className="h-4 w-4" aria-hidden="true" />
@@ -235,7 +241,7 @@ export function MusicPlayer({
           <div className="grid w-full grid-cols-[40px_1fr_40px] items-center gap-2 text-[11px] text-white/42">
             <span className="text-right">{formatTime(currentTime)}</span>
             <label className="sr-only" htmlFor="music-player-seek">
-              Seek
+              재생 위치
             </label>
             <input
               id="music-player-seek"
@@ -258,7 +264,7 @@ export function MusicPlayer({
         <div className="hidden items-center justify-end gap-2 sm:flex">
           <Volume2 className="h-4 w-4 text-white/52" aria-hidden="true" />
           <label className="sr-only" htmlFor="music-player-volume">
-            Volume
+            볼륨
           </label>
           <input
             id="music-player-volume"
