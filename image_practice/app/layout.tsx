@@ -1,14 +1,6 @@
 import { BuyMeCoffeeWidget } from "@/components/buy-me-coffee-widget";
 import type { Metadata } from "next";
-import { Black_Han_Sans } from "next/font/google";
 import "./globals.css";
-
-const blackHanSans = Black_Han_Sans({
-  display: "swap",
-  subsets: ["latin"],
-  variable: "--font-black-han-sans",
-  weight: "400",
-});
 
 export const metadata: Metadata = {
   title: "Image Practice Studio",
@@ -21,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={blackHanSans.variable}>
+    <html lang="en">
       <body>
         {children}
         <BuyMeCoffeeWidget />
