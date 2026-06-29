@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { KakaoAdFit } from "@/components/KakaoAdFit";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -28,7 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <KakaoAdFit />
+      </body>
     </html>
   );
 }
