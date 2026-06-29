@@ -24,11 +24,20 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "contexts/**/*.ts",
+    "contexts/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "next.config.ts",
+    "postcss.config.mjs",
+    "eslint.config.mjs",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next", "image_practice"]
 }

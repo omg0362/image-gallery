@@ -1,4 +1,4 @@
-import { BuyMeCoffeeWidget } from "@/components/buy-me-coffee-widget";
+import { BuyMeCoffeeWidget } from "../components/buy-me-coffee-widget";
 import type { Metadata } from "next";
 import "./globals.css";
 
