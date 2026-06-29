@@ -11,14 +11,42 @@ export const metadata: Metadata = {
       "http://localhost:3000",
   ),
   title: {
-    default: "Notion Blog",
-    template: "%s | Notion Blog",
+    default: "이예준 블로그",
+    template: "%s | 이예준 블로그",
   },
-  description: "Notion 데이터베이스를 CMS로 사용하는 블로그입니다.",
+  description:
+    "이예준이 운영하는 개인 블로그입니다. Notion CMS로 작성한 글과 프로젝트 기록을 게시합니다.",
+  applicationName: "이예준 블로그",
+  authors: [{ name: "이예준", url: "mailto:omg0362@gmail.com" }],
+  creator: "이예준",
+  publisher: "이예준",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
-    title: "Notion Blog",
-    description: "Notion에서 작성하고 게시하는 블로그입니다.",
+    title: "이예준 블로그",
+    description:
+      "이예준이 운영하는 개인 블로그입니다. Notion CMS로 작성한 글과 프로젝트 기록을 게시합니다.",
     type: "website",
+    locale: "ko_KR",
+    siteName: "이예준 블로그",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "이예준 블로그",
+    description:
+      "이예준이 운영하는 개인 블로그입니다. Notion CMS로 작성한 글과 프로젝트 기록을 게시합니다.",
   },
 };
 
